@@ -12,7 +12,8 @@ nodes = {
 }
 
 ring = {
-    hash_key(node): node
+    hash_key(f'{node}_{i}'): f'{node}_{i}' 
+    for i in range(1, 4)
     for node in nodes.keys()
 }
 
@@ -21,8 +22,8 @@ def get_node(key):
     sorted_hashes = sorted(ring.keys())
     for node_hash in sorted_hashes:
         if h < node_hash:
-            return ring[node_hash]
-    return ring[sorted_hashes[0]]  # wrap around
+            return ring[node_hash].split('_')[0]
+    return ring[sorted_hashes[0]].split('_')[0]  # wrap around
 
 
 app = Flask(__name__)
@@ -34,7 +35,6 @@ def hello_world():
 @app.route("/get")
 def get_cache_val():
     hash_value = hash_key("user:123")
-    print("hash_value", hash_value)
     node_id = get_node("user:123")
     cache = nodes[node_id]
     cache.get(hash_value)
@@ -43,7 +43,6 @@ def get_cache_val():
 @app.route("/set")
 def set_cache_val():
     hash_value = hash_key("user:123")
-    print("hash_value", hash_value)
     node_id = get_node("user:123")
     cache = nodes[node_id]
     cache.set(hash_value, "marcus")
