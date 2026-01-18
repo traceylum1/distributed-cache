@@ -1,5 +1,5 @@
 import hashlib
-from cache.cache import Cache
+from services.cache_service import Cache
 
 def hash_key(key): 
     return int(hashlib.md5(key.encode()).hexdigest(), 16)

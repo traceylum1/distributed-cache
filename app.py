@@ -1,5 +1,5 @@
 from flask import Flask
-import cache_client
+import services.cache_client as cache_client
 
 app = Flask(__name__)
 
