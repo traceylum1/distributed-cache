@@ -1,16 +1,12 @@
-class Cache:
-    def __init__(self):
-        self.cache = {}
-    
-    def get(self, hash_key):
-        if hash_key in self.cache:
-            print("Cache hit --", self.cache[hash_key])
-        else:
-            print("Cache miss")
+from cache import local_cache
+from services.routing_service import get_primary_node
+from clients.node_client import send_put
 
-    def set(self, hash_key, val):
-        if hash_key in self.cache:
-            print("Error: Cache key collision")
-            return
-        self.cache[hash_key] = val
-        print("New record added --", hash_key, ":", val)
+def handle_put(key, value):
+    node = get_primary_node(key)
+
+    if node.is_local:
+        local_cache.set(key, value)
+    else:
+        send_put(node.url, key, value)
+        
