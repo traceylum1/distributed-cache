@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-@dataclass(fronzen=True)
+@dataclass(frozen=True)
 class Node:
     id: str
     url: str

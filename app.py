@@ -1,19 +1,20 @@
-from flask import Flask, request, jsonify
-import services.routing_service as routing_service
+from flask import Flask
+from config import load_config
+from cluster.membership import build_nodes
+from services.routing_service import init_ring
+from routes.cache_routes import cache_bp
 
-app = Flask(__name__)
+def create_app():
+    config = load_config()
+    nodes = build_nodes(config)
 
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+    init_ring(nodes)
 
-@app.route("/cache/get", methods=["GET"])
-def get_key(key):
-    routing_service.get()
-    return "<p>Request to /get</p>"
+    app = Flask(__name__)
+    app.register_blueprint(cache_bp)
+    return app, config
 
-@app.route("/set", methods=["PUT"])
-def set_cache_val():
-    routing_service.set()
-    return "<p>Request to /set</p>"
+app, config = create_app()
 
+if __name__ == "__main__":
+    app.run(port=config["port"])
