@@ -1,4 +1,4 @@
-class Cache:
+class LocalCache:
     def __init__(self):
         self.cache = {}
     
