@@ -1,5 +1,6 @@
 import hashlib
 from services.cache_service import Cache
+from models.node import Node
 
 def hash_key(key): 
     return int(hashlib.md5(key.encode()).hexdigest(), 16)
