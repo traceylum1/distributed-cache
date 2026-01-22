@@ -1,19 +1,21 @@
-from cache import local_cache
-from services.routing_service import get_primary_node
-from clients.node_client import send_put
+class CacheService:
+    def __init__(self, routing_service, node_client, local_cache):
+        self.routing_service = routing_service
+        self.node_client = node_client
+        self.local_cache = local_cache
 
-def handle_put(key: str, value: str):
-    node = get_primary_node(key)
+    def handle_put(self, key: str, value: str):
+        node = self.routing_service.get_primary_node(key)
 
-    if node.is_local:
-        local_cache.set(key, value)
-    else:
-        send_put(node.url, key, value)
+        if node.is_local:
+            self.local_cache.set(key, value)
+        else:
+            self.node_client.send_put(node.url, key, value)
 
-# def handle_get(key):
-#     node = get_primary_node(key)
+    def handle_get(self, key: str):
+        node = self.routing_service.get_primary_node(key)
 
-#     if node.is_local:
-#         local_cache.get(key)
-#     else:
-#         send_get(node.url, key)
+        if node.is_local:
+            self.local_cache.get(key)
+        else:
+            self.node_client.send_get(node.url, key)

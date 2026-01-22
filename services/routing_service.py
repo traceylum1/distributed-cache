@@ -3,42 +3,29 @@ from models.node import Node
 from typing import List
 import bisect
 
-def _hash(key: str): 
-    return int(hashlib.md5(key.encode()).hexdigest(), 16)
 
+class RoutingService:
+    def __init__(self, nodes: List[Node]):
+        self.ring = []
+        self.node_map = {}
 
-_ring = []          # sorted list of hash positions
-_node_map = {}      # hash -> Node
+        for node in nodes:
+            h = self._hash(node.id)
+            self.ring.append(h)
+            self.node_map[h] = node
 
-def init_ring(nodes: List[Node]):
-    """
-    Initialize the consistent hash ring.
-    Must be called once at startup.
-    """
-    global _ring, _node_map
+    def _hash(self, key: str): 
+        return int(hashlib.md5(key.encode()).hexdigest(), 16)
 
-    _ring = []
-    _node_map = {}
+    def get_primary_node(self, key: str) -> Node:
+        key_hash = self._hash(key)
 
-    for node in nodes:
-        h = _hash(node.id)
-        _ring.append(h)
-        _node_map[h] = node
+        idx = bisect.bisect_left(self.ring, key_hash)
 
-    _ring.sort()
+        if idx == len(self.ring):
+            idx = 0  # wrap around ring
 
-def get_primary_node(key: str) -> Node:
-    if not _ring:
-        raise RuntimeError("Hash ring not initialized")
-
-    key_hash = _hash(key)
-
-    idx = bisect.bisect_left(_ring, key_hash)
-
-    if idx == len(_ring):
-        idx = 0  # wrap around ring
-
-    return _node_map[_ring[idx]]
+        return self.node_map[self.ring[idx]]
 
 
 
