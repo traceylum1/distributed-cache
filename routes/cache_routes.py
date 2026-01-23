@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
+from services.cache_service import CacheService
 
-def create_cache_bp(cache_service):
+def create_cache_bp(cache_service: CacheService) -> Blueprint:
     cache_bp = Blueprint("cache", __name__)
 
     @cache_bp.route("/")
@@ -8,7 +9,7 @@ def create_cache_bp(cache_service):
         return "<p>Hello, World!</p>"
 
     @cache_bp.route("/cache/<key>", methods=["PUT"])
-    def put_key(key):
+    def put_key(key: str):
         print("processing request")
         value = request.json["value"]
         print("value from request", value)

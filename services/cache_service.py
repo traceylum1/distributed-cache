@@ -1,5 +1,8 @@
+from services.routing_service import RoutingService
+from clients.node_client import NodeClient
+from cache.local_cache import LocalCache
 class CacheService:
-    def __init__(self, routing_service, node_client, local_cache):
+    def __init__(self, routing_service: RoutingService, node_client: NodeClient, local_cache: LocalCache):
         self.routing_service = routing_service
         self.node_client = node_client
         self.local_cache = local_cache

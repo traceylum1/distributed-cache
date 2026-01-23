@@ -1,6 +1,7 @@
 import argparse
+from models.node import NodeConfig
 
-def load_config():
+def load_config() -> NodeConfig:
     parser = argparse.ArgumentParser(description="Distributed Cache Node")
 
     parser.add_argument(
@@ -24,8 +25,4 @@ def load_config():
 
     args = parser.parse_args()
 
-    return {
-        "node_id": args.node_id,
-        "port": args.port,
-        "cluster": args.cluster,
-    }
+    return NodeConfig(node_id=args.node_id, port=args.port, cluster=args.cluster)
