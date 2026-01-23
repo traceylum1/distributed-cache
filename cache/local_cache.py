@@ -2,15 +2,15 @@ class LocalCache:
     def __init__(self):
         self.cache = {}
     
-    def get(self, hash_key):
-        if hash_key in self.cache:
-            print("Cache hit --", self.cache[hash_key])
+    def get(self, key: str):
+        if key in self.cache:
+            print("Cache hit --", self.cache[key])
         else:
             print("Cache miss")
 
-    def set(self, hash_key, val):
-        if hash_key in self.cache:
+    def put(self, key: str, val: str):
+        if key in self.cache:
             print("Error: Cache key collision")
             return
-        self.cache[hash_key] = val
-        print("New record added --", hash_key, ":", val)
+        self.cache[key] = val
+        print("New record added --", key, ":", val)

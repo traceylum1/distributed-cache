@@ -14,6 +14,10 @@ class RoutingService:
             self.ring.append(h)
             self.node_map[h] = node
 
+        self.ring.sort()
+        print("ring", self.ring)
+        print("node map", self.node_map)
+
     def _hash(self, key: str): 
         return int(hashlib.md5(key.encode()).hexdigest(), 16)
 

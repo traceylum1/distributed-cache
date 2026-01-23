@@ -11,7 +11,7 @@ class CacheService:
         node = self.routing_service.get_primary_node(key)
 
         if node.is_local:
-            self.local_cache.set(key, value)
+            self.local_cache.put(key, value)
         else:
             self.node_client.send_put(node.url, key, value)
 

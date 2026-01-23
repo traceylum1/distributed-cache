@@ -1,7 +1,7 @@
 import requests
 
 class NodeClient:
-    def send_put(node_url: str, key: str, value: str):
+    def send_put(self, node_url: str, key: str, value: str):
         print("calling node_client send_put")
         return requests.put(
             f"{node_url}/cache/{key}",
@@ -9,6 +9,9 @@ class NodeClient:
             timeout=1
         )
 
-    def send_get(node_url: str, key: str):
+    def send_get(self, node_url: str, key: str):
         print("calling node_client send_get")
-        return requests.get()
+        return requests.get(
+            f"{node_url}/cache/{key}",
+            timeout=1
+        )
