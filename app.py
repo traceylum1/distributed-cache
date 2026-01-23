@@ -5,6 +5,7 @@ from services.routing_service import RoutingService
 from services.cache_service import CacheService
 from clients.node_client import NodeClient
 from routes.cache_routes import create_cache_bp
+from routes.internal_routes import create_internal_bp
 from cache.local_cache import LocalCache
 
 def create_app():
@@ -24,7 +25,12 @@ def create_app():
     )
 
     cache_bp = create_cache_bp(cache_service)
-    app.register_blueprint(cache_bp)
+    internal_bp = create_internal_bp(local_cache)
+    
+    app.register_blueprint(
+        cache_bp,
+        internal_bp
+    )
     
     return app, config
 

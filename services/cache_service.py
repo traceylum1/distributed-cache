@@ -13,12 +13,12 @@ class CacheService:
         if node.is_local:
             self.local_cache.put(key, value)
         else:
-            self.node_client.send_put(node.url, key, value)
+            res = self.node_client.forward_put(node.url, key, value)
 
     def handle_get(self, key: str):
         node = self.routing_service.get_primary_node(key)
 
         if node.is_local:
-            self.local_cache.get(key)
+            value = self.local_cache.get(key)
         else:
-            self.node_client.send_get(node.url, key)
+            res = self.node_client.forward_get(node.url, key)
