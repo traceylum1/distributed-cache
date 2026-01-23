@@ -10,8 +10,10 @@ def create_internal_bp(local_cache: LocalCache) -> Blueprint:
         value = request.json["value"]
         print("value from request", value)
         print("key from request", key)
-        local_cache.put(key, value)
-        return 200
+        if local_cache.put(key, value) == False:
+            return "", 500
+        return "", 200
+        
     
     @internal_bp.route("/internal/cache/<key>", methods=["GET"])
     def get_key(key: str):
