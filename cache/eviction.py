@@ -29,6 +29,11 @@ class LRU:
         node = self.hashmap[key]
         self._remove_node(node)
         self._add_node(node)
+    
+    def on_delete(self, key: str):
+        node = self.hashmap[key]
+        self._remove_node(node)
+        del self.hashmap[key]
 
     def _get_lru(self) -> ListNode:
         return self.tail.prev

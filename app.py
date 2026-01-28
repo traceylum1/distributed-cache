@@ -8,6 +8,7 @@ from routes.cache_routes import create_cache_bp
 from routes.internal_routes import create_internal_bp
 from cache.local_cache import LocalCache
 from cache.eviction import LRU
+from cache.expiration import TTL
 
 def create_app():
     app = Flask(__name__)
@@ -16,7 +17,8 @@ def create_app():
     nodes = build_nodes(config)
 
     eviction_policy = LRU()
-    local_cache = LocalCache(capacity=1, eviction=eviction_policy)
+    expiration_policy = TTL(5)
+    local_cache = LocalCache(capacity=3, eviction=eviction_policy, expiration=expiration_policy)
 
     routing_service = RoutingService(nodes)
     node_client = NodeClient()
