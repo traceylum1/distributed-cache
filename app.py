@@ -7,6 +7,7 @@ from clients.node_client import NodeClient
 from routes.cache_routes import create_cache_bp
 from routes.internal_routes import create_internal_bp
 from cache.local_cache import LocalCache
+from cache.eviction import LRU
 
 def create_app():
     app = Flask(__name__)
@@ -14,7 +15,8 @@ def create_app():
     config = load_config()
     nodes = build_nodes(config)
 
-    local_cache = LocalCache()
+    eviction_policy = LRU()
+    local_cache = LocalCache(capacity=1, eviction=eviction_policy)
 
     routing_service = RoutingService(nodes)
     node_client = NodeClient()
@@ -27,10 +29,8 @@ def create_app():
     cache_bp = create_cache_bp(cache_service)
     internal_bp = create_internal_bp(local_cache)
     
-    app.register_blueprint(
-        cache_bp,
-        internal_bp
-    )
+    app.register_blueprint(cache_bp)
+    app.register_blueprint(internal_bp)
     
     return app, config
 
