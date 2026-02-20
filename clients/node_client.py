@@ -16,9 +16,7 @@ class NodeClient:
             f"{node_url}/internal/cache/{key}",
             timeout=1
         )
-
-        resText = res.text
-        if resText:
-            return resText, 200
+        if res.status_code > 400:
+            return "", res.status_code
         else:
-            return "", 204
+            return res.text, 200

@@ -12,7 +12,7 @@ def create_internal_bp(local_cache: LocalCache) -> Blueprint:
         print("key from request", key)
         if local_cache.put(key, value) == False:
             return "", 500
-        return "", 200
+        return "", 201
         
     
     @internal_bp.route("/internal/cache/<key>", methods=["GET"])
@@ -20,7 +20,7 @@ def create_internal_bp(local_cache: LocalCache) -> Blueprint:
         print("processing forwarded get request")
         value = local_cache.get(key)
         if value == None:
-            return "", 404
+            return "", 200
         return value, 200
 
     
