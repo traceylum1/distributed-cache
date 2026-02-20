@@ -23,6 +23,17 @@ def create_internal_bp(local_cache: LocalCache) -> Blueprint:
             return "", 200
         return value, 200
 
+
+    @internal_bp.route("/internal/replica/<key>", methods=["PUT"])
+    def put_key(key: str):
+        print("processing forwarded put request to replica")
+        value = request.json["value"]
+        print("value from request", value)
+        print("key from request", key)
+        if local_cache.put(key, value) == False:
+            return "", 500
+        return "", 201
+
     
     return internal_bp
 

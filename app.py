@@ -20,7 +20,7 @@ def create_app():
     expiration_policy = TTL(5)
     local_cache = LocalCache(capacity=3, eviction=eviction_policy, expiration=expiration_policy)
 
-    routing_service = RoutingService(nodes)
+    routing_service = RoutingService(nodes=nodes, replication_factor=2)
     node_client = NodeClient()
     cache_service = CacheService(
         routing_service=routing_service, 

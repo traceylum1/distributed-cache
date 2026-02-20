@@ -20,3 +20,12 @@ class NodeClient:
             return "", res.status_code
         else:
             return res.text, 200
+    
+    def send_put_async(self, node, key: str, value: str):
+        print("calling node_client send_put_async")
+        res = requests.put(
+            f"{node.url}/internal/replica/{key}",
+            json={"value": value},
+            timeout=1
+        )
+        return "", res.status_code

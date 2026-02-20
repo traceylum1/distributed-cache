@@ -4,9 +4,10 @@ from typing import List
 import bisect
 
 class RoutingService:
-    def __init__(self, nodes: List[Node]):
+    def __init__(self, nodes: List[Node], replication_factor: int):
         self.ring = []
         self.node_map = {}
+        self.replication_factor = replication_factor
 
         for node in nodes:
             h = self._hash(node.id)
@@ -20,12 +21,23 @@ class RoutingService:
     def _hash(self, key: str): 
         return int(hashlib.md5(key.encode()).hexdigest(), 16)
 
-    def get_primary_node(self, key: str) -> Node:
+    """
+    get_nodes_for_key: 
+        - gets primary and replica nodes
+        - returns them in an ordered list [primary, replica1, replica2, ...]
+    """
+    def get_primary_and_replica_nodes(self, key: str) -> Node:
         key_hash = self._hash(key)
 
         idx = bisect.bisect_left(self.ring, key_hash)
 
         if idx == len(self.ring):
             idx = 0  # wrap around ring
+        
+        nodes = []
 
-        return self.node_map[self.ring[idx]]
+        for i in range(self.replication_factor):
+            curr_idx = idx + i
+            nodes.append(self.node_map[self.ring[curr_idx]])
+
+        return nodes
