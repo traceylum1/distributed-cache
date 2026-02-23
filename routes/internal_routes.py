@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
 from services.cache_service import CacheService
 from services.replication_service import replicate_to
-import asyncio
 
 def create_internal_bp(cache_service: CacheService) -> Blueprint:
     internal_bp = Blueprint("internal", __name__)

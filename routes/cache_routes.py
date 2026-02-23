@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify
 from services.cache_service import CacheService
-import asyncio
 
 def create_cache_bp(cache_service: CacheService) -> Blueprint:
     cache_bp = Blueprint("cache", __name__)
