@@ -37,7 +37,7 @@ class RoutingService:
         nodes = []
 
         for i in range(self.replication_factor):
-            curr_idx = idx + i
+            curr_idx = (idx + i) % self.replication_factor
             nodes.append(self.node_map[self.ring[curr_idx]])
 
         return nodes

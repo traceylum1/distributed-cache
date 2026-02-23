@@ -1,38 +1,32 @@
 from flask import Blueprint, request, jsonify
-from cache.local_cache import LocalCache
+from services.cache_service import CacheService
+from services.replication_service import replicate_to
+import asyncio
 
-def create_internal_bp(local_cache: LocalCache) -> Blueprint:
+def create_internal_bp(cache_service: CacheService) -> Blueprint:
     internal_bp = Blueprint("internal", __name__)
 
     @internal_bp.route("/internal/cache/<key>", methods=["PUT"])
-    def put_key(key: str):
+    async def put_key(key: str):
         print("processing forwarded put request")
         value = request.json["value"]
         print("value from request", value)
         print("key from request", key)
-        if local_cache.put(key, value) == False:
-            return "", 500
-        return "", 201
+        return await cache_service.handle_put(key, value)
         
-    
     @internal_bp.route("/internal/cache/<key>", methods=["GET"])
     def get_key(key: str):
         print("processing forwarded get request")
-        value = local_cache.get(key)
-        if value == None:
-            return "", 200
-        return value, 200
+        return cache_service.handle_get(key)
 
 
     @internal_bp.route("/internal/replica/<key>", methods=["PUT"])
-    def put_key(key: str):
+    def put_key_replica(key: str):
         print("processing forwarded put request to replica")
         value = request.json["value"]
         print("value from request", value)
         print("key from request", key)
-        if local_cache.put(key, value) == False:
-            return "", 500
-        return "", 201
+        return cache_service.handle_replication(key, value)
 
     
     return internal_bp

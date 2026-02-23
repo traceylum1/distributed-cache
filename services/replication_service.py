@@ -1,9 +1,16 @@
 from typing import List
 from models.node import Node
+from clients.node_client import NodeClient
+import aiohttp
+import asyncio
 
-def replicate_to(self, replicas: List[Node], key: str, value: str):
+async def replicate_to(node_client: NodeClient, replicas: List[Node], key: str, value: str):
     print("calling node_client replicate_to")
-    futures = []
-    for r in replicas:
-        futures.append(self.send_put_async(r, key, value))
-    wait_for_all(futures)
+    try:
+        async with aiohttp.ClientSession() as session:
+            await asyncio.gather(*(node_client.send_put_async(session, r.url, key, value) for r in replicas))
+        print("Sent all requests")
+
+        # wait_for_all(futures)
+    except Exception as e:
+        print("Error with replication requests", e.__class__)

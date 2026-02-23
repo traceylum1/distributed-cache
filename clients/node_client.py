@@ -1,4 +1,6 @@
 import requests
+import asyncio
+import aiohttp
 
 class NodeClient:
     def forward_put(self, node_url: str, key: str, value: str):
@@ -21,11 +23,12 @@ class NodeClient:
         else:
             return res.text, 200
     
-    def send_put_async(self, node, key: str, value: str):
-        print("calling node_client send_put_async")
-        res = requests.put(
-            f"{node.url}/internal/replica/{key}",
-            json={"value": value},
-            timeout=1
-        )
-        return "", res.status_code
+    async def send_put_async(self, session: aiohttp.ClientSession, node_url: str, key: str, value: str):
+        print("calling node_client send_put_async", node_url)
+        try:
+            async with session.put(url=f"{node_url}/internal/replica/{key}", json={"value": value}) as res:
+
+                return "", res.status
+        except Exception as e:
+            print("Failed to set put request to replica", e.__class__)
+            return "", 

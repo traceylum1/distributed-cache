@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from services.cache_service import CacheService
+import asyncio
 
 def create_cache_bp(cache_service: CacheService) -> Blueprint:
     cache_bp = Blueprint("cache", __name__)
@@ -9,12 +10,12 @@ def create_cache_bp(cache_service: CacheService) -> Blueprint:
         return "<p>Hello, World!</p>"
 
     @cache_bp.route("/cache/<key>", methods=["PUT"])
-    def put_key(key: str):
+    async def put_key(key: str):
         print("processing put request")
         value = request.json["value"]
         print("value from request", value)
         print("key from request", key)
-        return cache_service.handle_put(key, value)
+        return await cache_service.handle_put(key, value)
 
     @cache_bp.route("/cache/<key>", methods=["GET"])
     def get_key(key: str):

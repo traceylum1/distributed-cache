@@ -20,7 +20,7 @@ def create_app():
     expiration_policy = TTL(5)
     local_cache = LocalCache(capacity=3, eviction=eviction_policy, expiration=expiration_policy)
 
-    routing_service = RoutingService(nodes=nodes, replication_factor=2)
+    routing_service = RoutingService(nodes=nodes, replication_factor=3)
     node_client = NodeClient()
     cache_service = CacheService(
         routing_service=routing_service, 
@@ -29,7 +29,7 @@ def create_app():
     )
 
     cache_bp = create_cache_bp(cache_service)
-    internal_bp = create_internal_bp(local_cache)
+    internal_bp = create_internal_bp(cache_service)
     
     app.register_blueprint(cache_bp)
     app.register_blueprint(internal_bp)
