@@ -2,6 +2,9 @@ import requests
 import aiohttp
 
 class NodeClient:
+    def __init__(self, retries: int):
+        self.retries = retries
+
     def forward_put(self, node_url: str, key: str, value: str):
         print("calling node_client forward_put")
         res = requests.put(
@@ -17,7 +20,7 @@ class NodeClient:
             f"{node_url}/internal/cache/{key}",
             timeout=1
         )
-        if res.status_code > 400:
+        if res.status_code >= 400:
             return "", res.status_code
         else:
             return res.text, 200
@@ -30,4 +33,4 @@ class NodeClient:
                 return "", res.status
         except Exception as e:
             print("Failed to set put request to replica", e.__class__)
-            return "", 
+            return "", 500

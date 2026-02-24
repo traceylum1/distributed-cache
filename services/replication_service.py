@@ -11,6 +11,5 @@ async def replicate_to(node_client: NodeClient, replicas: List[Node], key: str, 
             await asyncio.gather(*(node_client.send_put_async(session, r.url, key, value) for r in replicas))
         print("Sent all requests")
 
-        # wait_for_all(futures)
     except Exception as e:
         print("Error with replication requests", e.__class__)

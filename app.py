@@ -21,7 +21,7 @@ def create_app():
     local_cache = LocalCache(capacity=3, eviction=eviction_policy, expiration=expiration_policy)
 
     routing_service = RoutingService(nodes=nodes, replication_factor=3)
-    node_client = NodeClient()
+    node_client = NodeClient(retries=3)
     cache_service = CacheService(
         routing_service=routing_service, 
         node_client=node_client, 
