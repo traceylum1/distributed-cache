@@ -11,3 +11,8 @@ class NodeConfig:
     node_id: str
     port: int
     cluster: str
+
+@dataclass
+class NodeState:
+    status: str
+    last_heartbeat: str
