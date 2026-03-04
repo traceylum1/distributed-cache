@@ -1,9 +1,11 @@
 import requests
 import aiohttp
+from services.cluster_service import ClusterService
 
 class NodeClient:
-    def __init__(self, retries: int):
+    def __init__(self, cluster_service: ClusterService, retries: int):
         self.retries = retries
+        self.cluster_service = cluster_service
 
     def forward_put(self, node_url: str, key: str, value: str):
         print("calling node_client forward_put")
@@ -34,3 +36,16 @@ class NodeClient:
         except Exception as e:
             print("Failed to set put request to replica", e.__class__)
             return "", 500
+    
+    def send_ping(self, node_url: str):
+        print("calling node_client send_ping", node_url)
+        res = requests.get(
+            f"{node_url}/ping",
+            timeout=1
+        )
+        if res.status_code >= 400:
+            self.cluster_service.mark_suspect(node_url)
+            
+            return "", res.status_code
+        else:
+            return res.text, 200

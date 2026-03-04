@@ -29,6 +29,6 @@ class ClusterService:
     def mark_alive(self, node_id: str) -> None:
         self.cluster_map[node_id].status == "alive"
 
-    def update_heartbeat(self, node_id: str) -> None:
+    def update_last_heartbeat(self, node_id: str) -> None:
         self.cluster_map[node_id].last_heartbeat == time.time()
     
