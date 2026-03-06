@@ -13,6 +13,9 @@ With gossip:
 - If a ping fails, spread suspicion to other nodes via gossip
 - Other nodes ping suspect node, if majority marks suspect, mark dead
 - Eventually consistent with faster convergence
+
+TODO:
+- Figure out if threading.Event() is needed in this circumstance
 """
 class FailureDetection:
     def __init__(self, cluster_service: ClusterService, node_client: NodeClient, interval=3):

@@ -1,13 +1,15 @@
 import hashlib
 from models.node import Node
+from cluster_service import ClusterService
 from typing import List
 import bisect
 
 class RoutingService:
-    def __init__(self, nodes: List[Node], replication_factor: int):
+    def __init__(self, nodes: List[Node], cluster_service: ClusterService, replication_factor: int):
         self.ring = []
         self.node_map = {}
         self.replication_factor = replication_factor
+        self.cluster_service = cluster_service
 
         for node in nodes:
             h = self._hash(node.id)
@@ -30,7 +32,6 @@ class RoutingService:
         key_hash = self._hash(key)
 
         idx = bisect.bisect_left(self.ring, key_hash)
-
         if idx == len(self.ring):
             idx = 0  # wrap around ring
         

@@ -30,14 +30,14 @@ class ClusterService:
     
     def mark_suspect(self, node_id: str) -> None:
         if self.cluster_map[node_id].status == "alive":
-            self.cluster_map[node_id].status == "suspect"
+            self.cluster_map[node_id].status = "suspect"
     
     def mark_dead(self, node_id: str) -> None:
         if self.cluster_map[node_id].status == "suspect":
-            self.cluster_map[node_id].status == "dead"
+            self.cluster_map[node_id].status = "dead"
 
     def mark_alive(self, node_id: str) -> None:
         if self.cluster_map[node_id].status == "dead":
-            self.cluster_map[node_id].status == "alive"
+            self.cluster_map[node_id].status = "alive"
 
     
