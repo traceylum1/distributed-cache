@@ -4,21 +4,25 @@ import time
 
 
 class ClusterService:
-    def __init__(self, nodes: List[Node]):
-        self.cluster_map = {}
+    def __init__(self, nodes: List[Node], failure_threshold: int):
+        self.cluster_map: dict[str, NodeState] = {}
 
         for node in nodes:
-            self.cluster_map[node.id] = NodeState(status="alive", last_heartbeat="0")
+            self.cluster_map[node.id] = NodeState(status="alive", missed_pings="0")
 
     def get_active_nodes(self) -> List[str]:
         active_nodes = []
-        for node_id, state in self.cluster_map:
-            if state.status == "alive":
+        for node_id, node_state in self.cluster_map.items():
+            if node_state.status == "alive":
                 active_nodes.append(node_id)
         return active_nodes
 
     def is_alive(self, node_id: str) -> bool:
         return self.cluster_map[node_id].status == "alive"
+
+    def update_missed_pings(self, node_id: str) -> None:
+        self.cluster_map[node_id].missed_pings += 1
+        if self.cluster_map[node_id].missed_pings >= 
     
     def mark_suspect(self, node_id: str) -> None:
         self.cluster_map[node_id].status == "suspect"
@@ -29,6 +33,4 @@ class ClusterService:
     def mark_alive(self, node_id: str) -> None:
         self.cluster_map[node_id].status == "alive"
 
-    def update_last_heartbeat(self, node_id: str) -> None:
-        self.cluster_map[node_id].last_heartbeat == time.time()
     

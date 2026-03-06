@@ -15,4 +15,4 @@ class NodeConfig:
 @dataclass
 class NodeState:
     status: str
-    last_heartbeat: str
+    missed_pings: int
