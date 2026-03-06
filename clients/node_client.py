@@ -44,8 +44,7 @@ class NodeClient:
             timeout=1
         )
         if res.status_code >= 400:
-            self.cluster_service.mark_suspect(node_url)
-            
+            self.cluster_service.update_missed_pings(node_url)
             return "", res.status_code
         else:
             return res.text, 200
