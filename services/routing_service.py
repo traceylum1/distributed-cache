@@ -1,6 +1,6 @@
 import hashlib
 from models.node import Node
-from cluster_service import ClusterService
+from services.cluster_service import ClusterService
 from typing import List
 import bisect
 
@@ -38,7 +38,7 @@ class RoutingService:
         nodes = []
 
         for i in range(self.replication_factor):
-            curr_idx = (idx + i) % self.replication_factor
+            curr_idx = (idx + i) % len(self.ring)
             nodes.append(self.node_map[self.ring[curr_idx]])
 
         return nodes

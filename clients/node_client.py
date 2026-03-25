@@ -37,14 +37,15 @@ class NodeClient:
             print("Failed to set put request to replica", e.__class__)
             return "", 500
     
-    def send_ping(self, node_url: str):
+    def send_ping(self, node_id: str, node_url: str):
         print("calling node_client send_ping", node_url)
         res = requests.get(
             f"{node_url}/ping",
             timeout=1
         )
         if res.status_code >= 400:
-            self.cluster_service.update_missed_pings(node_url)
+            self.cluster_service.update_missed_pings(node_id)
             return "", res.status_code
         else:
+            self.cluster_service.mark_alive(node_id)
             return res.text, 200

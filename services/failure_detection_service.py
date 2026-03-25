@@ -1,7 +1,7 @@
 import threading
 import time
-from ..clients.node_client import NodeClient
-from .cluster_service import ClusterService
+from clients.node_client import NodeClient
+from services.cluster_service import ClusterService
 
 """
 Failure detection will use pinging (pull-based)

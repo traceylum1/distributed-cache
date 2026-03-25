@@ -22,9 +22,9 @@ def create_app():
     expiration_policy = TTL(5)
     local_cache = LocalCache(capacity=3, eviction=eviction_policy, expiration=expiration_policy)
 
-    cluster_service = ClusterService(nodes=nodes, failure_threshold=6)
+    cluster_service = ClusterService(nodes=nodes, suspect_threshold=3, failure_threshold=6)
     routing_service = RoutingService(nodes=nodes, cluster_service=cluster_service, replication_factor=3)
-    node_client = NodeClient(retries=3)
+    node_client = NodeClient(cluster_service=cluster_service, retries=3)
     
     cache_service = CacheService(
         routing_service=routing_service, 
@@ -32,11 +32,12 @@ def create_app():
         local_cache=local_cache
     )
 
-    failure_detection = FailureDetection(
-        cluster_service=cluster_service,
-        node_client=node_client
-    )
-    failure_detection.start()
+    # failure_detection = FailureDetection(
+    #     cluster_service=cluster_service,
+    #     node_client=node_client
+    # )
+
+    # failure_detection.start()
 
     cache_bp = create_cache_bp(cache_service)
     internal_bp = create_internal_bp(cache_service)

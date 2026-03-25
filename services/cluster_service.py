@@ -1,43 +1,40 @@
-from ..models.node import NodeState, Node
+from models.node import NodeState, Node
 from typing import List
-import time
-
 
 class ClusterService:
-    def __init__(self, nodes: List[Node], failure_threshold: int):
+    def __init__(self, nodes: List[Node], suspect_threshold: int, failure_threshold: int):
         self.cluster_map: dict[str, NodeState] = {}
+        self.suspect_threshold = suspect_threshold
         self.failure_threshold = failure_threshold
 
         for node in nodes:
-            self.cluster_map[node.id] = NodeState(status="alive", missed_pings="0")
+            self.cluster_map[node.id] = NodeState(status="alive", missed_pings=0)
 
     def get_active_nodes(self) -> List[str]:
-        active_nodes = []
-        for node_id, node_state in self.cluster_map.items():
-            if node_state.status == "alive":
-                active_nodes.append(node_id)
-        return active_nodes
+        return [
+            node_id
+            for node_id, state in self.cluster_map.items()
+            if state.status == "alive" or state.status == "suspect"
+        ]
 
     def is_alive(self, node_id: str) -> bool:
         return self.cluster_map[node_id].status == "alive"
+    
+    def is_suspect(self, node_id: str) -> bool:
+        return self.cluster_map[node_id].status == "suspect"
 
     def update_missed_pings(self, node_id: str) -> None:
-        self.cluster_map[node_id].missed_pings += 1
-        if self.cluster_map[node_id].missed_pings == 1:
-            self.mark_suspect(node_id)
-        elif self.cluster_map[node_id].missed_pings == self.failure_threshold:
-            self.mark_dead(node_id)
-    
-    def mark_suspect(self, node_id: str) -> None:
-        if self.cluster_map[node_id].status == "alive":
-            self.cluster_map[node_id].status = "suspect"
-    
-    def mark_dead(self, node_id: str) -> None:
-        if self.cluster_map[node_id].status == "suspect":
-            self.cluster_map[node_id].status = "dead"
+        state = self.cluster_map[node_id]
+        state.missed_pings += 1
+
+        if state.missed_pings >= self.failure_threshold:
+            state.status = "dead"
+        elif state.missed_pings >= self.suspect_threshold:
+            state.status = "suspect"
 
     def mark_alive(self, node_id: str) -> None:
-        if self.cluster_map[node_id].status == "dead":
-            self.cluster_map[node_id].status = "alive"
+        state = self.cluster_map[node_id]
+        state.status = "alive"
+        state.missed_pings = 0
 
     
