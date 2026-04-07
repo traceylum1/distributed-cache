@@ -16,3 +16,11 @@ class NodeConfig:
 class NodeState:
     status: str
     missed_pings: int
+
+@dataclass
+class NodeData:
+    id: str
+    url: str
+    is_local: bool
+    status: str
+    missed_pings: int
