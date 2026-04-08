@@ -35,6 +35,6 @@ class FailureDetection:
         while not self._stop_event.is_set():
             # Example: failure detection
             active_nodes = self.cluster_service.get_active_nodes()
-            for n_id in active_nodes:
-                self.node_client.send_ping(n_id)
+            for n_id, n_url in active_nodes:
+                self.node_client.send_ping(n_id, n_url)
             time.sleep(self.interval)

@@ -16,14 +16,14 @@ def create_app():
     app = Flask(__name__)
 
     config = load_config()
-    nodes = build_nodes(config)
+    node_map = build_nodes(config)
 
     eviction_policy = LRU()
     expiration_policy = TTL(5)
     local_cache = LocalCache(capacity=3, eviction=eviction_policy, expiration=expiration_policy)
 
-    cluster_service = ClusterService(nodes=nodes, suspect_threshold=3, failure_threshold=6)
-    routing_service = RoutingService(nodes=nodes, cluster_service=cluster_service, replication_factor=3)
+    cluster_service = ClusterService(node_map=node_map, suspect_threshold=3, failure_threshold=6)
+    routing_service = RoutingService(node_map=node_map, cluster_service=cluster_service, replication_factor=3)
     node_client = NodeClient(cluster_service=cluster_service, retries=3)
     
     cache_service = CacheService(
