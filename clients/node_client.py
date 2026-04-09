@@ -39,13 +39,21 @@ class NodeClient:
     
     def send_ping(self, node_id: str, node_url: str):
         print("calling node_client send_ping", node_url)
-        res = requests.get(
-            f"{node_url}/ping",
-            timeout=1
-        )
-        if res.status_code >= 400:
-            self.cluster_service.update_missed_pings(node_id)
-            return "", res.status_code
-        else:
+        try:
+            res = requests.get(f"{node_url}/ping", timeout=1)
+            # If we get here, the node responded
+            print("Alive:", res.status_code)
             self.cluster_service.mark_alive(node_id)
-            return res.text, 200
+
+        except requests.exceptions.Timeout:
+            print("Timeout → node likely slow or dead")
+            self.cluster_service.update_missed_pings(node_id)
+
+        except requests.exceptions.ConnectionError as e:
+            print("Connection error → node likely dead or unreachable")
+            print("Details:", e)
+            self.cluster_service.update_missed_pings(node_id)
+
+        except requests.exceptions.RequestException as e:
+            print("Other error:", e)
+            self.cluster_service.update_missed_pings(node_id)

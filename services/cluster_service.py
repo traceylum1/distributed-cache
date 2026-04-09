@@ -11,8 +11,8 @@ class ClusterService:
     def get_active_nodes(self) -> List[tuple[str, str]]:
         return [
             (node_id, node_data.url)
-            for node_id, node_data in self.node_map
-            if node_data.status == "alive" or node_data.status == "suspect"
+            for node_id, node_data in self.node_map.items()
+            if not node_data.is_local and (node_data.status == "alive" or node_data.status == "suspect")
         ]
 
     def is_alive(self, node_id: str) -> bool:

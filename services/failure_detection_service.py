@@ -1,5 +1,6 @@
 import threading
 import time
+from models.node import NodeData
 from clients.node_client import NodeClient
 from services.cluster_service import ClusterService
 
@@ -18,7 +19,8 @@ TODO:
 - Figure out if threading.Event() is needed in this circumstance
 """
 class FailureDetection:
-    def __init__(self, cluster_service: ClusterService, node_client: NodeClient, interval=3):
+    def __init__(self, node_map: dict[str, NodeData], cluster_service: ClusterService, node_client: NodeClient, interval=3):
+        self.node_map = node_map
         self.cluster_service = cluster_service
         self.node_client = node_client
         self.interval = interval
@@ -34,7 +36,6 @@ class FailureDetection:
     def run(self):
         while not self._stop_event.is_set():
             # Example: failure detection
-            active_nodes = self.cluster_service.get_active_nodes()
-            for n_id, n_url in active_nodes:
-                self.node_client.send_ping(n_id, n_url)
+            for node_id, node_data in self.node_map.items():
+                self.node_client.send_ping(node_id, node_data.url)
             time.sleep(self.interval)
