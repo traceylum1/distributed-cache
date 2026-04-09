@@ -8,6 +8,7 @@ from services.cache_service import CacheService
 from clients.node_client import NodeClient
 from routes.cache_routes import create_cache_bp
 from routes.internal_routes import create_internal_bp
+from routes.health_routes import create_health_bp
 from cache.local_cache import LocalCache
 from cache.eviction import LRU
 from cache.expiration import TTL
@@ -55,9 +56,12 @@ def create_app():
 
     cache_bp = create_cache_bp(cache_service)
     internal_bp = create_internal_bp(cache_service)
+    health_bp = create_health_bp()
     
     app.register_blueprint(cache_bp)
     app.register_blueprint(internal_bp)
+    app.register_blueprint(health_bp)
+    
 
     return app, config
 

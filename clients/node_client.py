@@ -40,7 +40,7 @@ class NodeClient:
     def send_ping(self, node_id: str, node_url: str):
         print("calling node_client send_ping", node_url)
         try:
-            res = requests.get(f"{node_url}/ping", timeout=1)
+            res = requests.get(f"{node_url}/health/ping", timeout=1)
             # If we get here, the node responded
             print("Alive:", res.status_code)
             self.cluster_service.mark_alive(node_id)
