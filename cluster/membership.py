@@ -10,7 +10,7 @@ def build_nodes(config: NodeConfig) -> List[NodeData]:
 
         node_map[node_id] = NodeData(
                                 id=node_id,
-                                url=f"http://localhost:{port}",
+                                url=f"http://127.0.0.1:{port}",
                                 is_local=is_local,
                                 status=("alive" if is_local else "dead"),
                                 missed_pings=0
