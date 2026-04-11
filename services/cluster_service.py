@@ -1,5 +1,6 @@
 from models.node import NodeData
 from typing import List
+import time
 
 class ClusterService:
     def __init__(self, node_map: dict[str, NodeData], suspect_threshold: int, failure_threshold: int):
@@ -23,7 +24,7 @@ class ClusterService:
 
     def update_missed_pings(self, node_id: str) -> None:
         state = self.node_map[node_id]
-        state.missed_pings += 1
+        state.missed_pings = min(state.missed_pings+1, self.failure_threshold)
         print(f'missed pings - {state.missed_pings} (Node {node_id})' )
 
         if state.missed_pings >= self.failure_threshold:
@@ -35,5 +36,17 @@ class ClusterService:
         state = self.node_map[node_id]
         state.status = "alive"
         state.missed_pings = 0
+        state.backoff_interval = 0
 
-    
+    def should_ping(self, node_id: str) -> bool:
+        state = self.node_map[node_id]
+
+        if state.status == "dead":
+            state.backoff_interval *= 2
+            return self.time_since_last_ping(node_id) > state.backoff_interval
+
+        return True
+
+    def time_since_last_ping(self, node_id: str) -> float:
+        state = self.node_map[node_id]
+        return time.time() - state.last_ping

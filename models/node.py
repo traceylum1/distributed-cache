@@ -24,3 +24,5 @@ class NodeData:
     is_local: bool
     status: str
     missed_pings: int
+    last_ping: float
+    backoff_interval: int
