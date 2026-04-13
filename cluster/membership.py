@@ -12,7 +12,7 @@ def build_nodes(config: NodeConfig) -> List[NodeData]:
                                 id=node_id,
                                 url=f"http://127.0.0.1:{port}",
                                 is_local=is_local,
-                                status=("alive" if is_local else "dead"),
+                                status=("alive"),
                                 missed_pings=0,
                                 last_ping=0,
                                 backoff_interval=1,

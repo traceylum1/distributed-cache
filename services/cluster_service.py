@@ -45,8 +45,10 @@ class ClusterService:
         state = self.node_map[node_id]
 
         if state.status == "dead":
-            state.backoff_interval *= 2
-            return self.time_since_last_ping(node_id) > state.backoff_interval
+            if self.time_since_last_ping(node_id) < state.backoff_interval:
+                return False
+            else:
+                state.backoff_interval *= 2
 
         return True
 
