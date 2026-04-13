@@ -15,6 +15,9 @@ class ClusterService:
             for node_id, node_data in self.node_map.items()
             if not node_data.is_local and (node_data.status == "alive" or node_data.status == "suspect")
         ]
+    
+    def update_last_ping(self, node_id: str) -> None:
+        self.node_map[node_id].last_ping = time.time()
 
     def is_alive(self, node_id: str) -> bool:
         return self.node_map[node_id].status == "alive"
@@ -36,7 +39,7 @@ class ClusterService:
         state = self.node_map[node_id]
         state.status = "alive"
         state.missed_pings = 0
-        state.backoff_interval = 0
+        state.backoff_interval = 1
 
     def should_ping(self, node_id: str) -> bool:
         state = self.node_map[node_id]

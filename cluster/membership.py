@@ -13,7 +13,9 @@ def build_nodes(config: NodeConfig) -> List[NodeData]:
                                 url=f"http://127.0.0.1:{port}",
                                 is_local=is_local,
                                 status=("alive" if is_local else "dead"),
-                                missed_pings=0
+                                missed_pings=0,
+                                last_ping=0,
+                                backoff_interval=1,
                             )
     
     print("node_map", node_map)
