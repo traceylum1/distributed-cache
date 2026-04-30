@@ -17,6 +17,10 @@ def create_internal_bp(cache_service: CacheService) -> Blueprint:
     def get_key(key: str):
         print("processing forwarded get request")
         return cache_service.handle_get(key)
+    
+    @internal_bp.route("/internal/full_cache", methods=["GET"])
+    def get_full_cache():
+        return cache_service.cache
 
 
     @internal_bp.route("/internal/replica/<key>", methods=["PUT"])

@@ -55,10 +55,18 @@ def create_app():
 
     failure_detection.start()
 
-    cache_bp = create_cache_bp(cache_service)
-    internal_bp = create_internal_bp(cache_service)
+    cache_bp = create_cache_bp(
+        cache_service=cache_service
+    )
+    internal_bp = create_internal_bp(
+        cache_service=cache_service
+    )
     health_bp = create_health_bp()
-    view_bp = create_view_bp(node_map)
+    view_bp = create_view_bp(
+        node_map=node_map,
+        cache_service=cache_service,
+        node_client=node_client
+    )
     
     app.register_blueprint(cache_bp)
     app.register_blueprint(internal_bp)

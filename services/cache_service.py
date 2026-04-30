@@ -42,3 +42,6 @@ class CacheService:
         if self.local_cache.put(key, value) == False:
             return "", 500
         return "", 201
+    
+    def handle_get_full_cache(self):
+        return self.local_cache.get_full_cache(), 200

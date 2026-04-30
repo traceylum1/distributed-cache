@@ -37,3 +37,6 @@ class LocalCache:
         self.eviction.on_delete(key)
         self.expiration.on_delete(key)
         del self.cache[key]
+    
+    def get_full_cache(self):
+        return self.cache

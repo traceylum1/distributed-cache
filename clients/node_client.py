@@ -57,3 +57,14 @@ class NodeClient:
         except requests.exceptions.RequestException as e:
             print("Other error:", e)
             self.cluster_service.update_missed_pings(node_id)
+    
+    def get_cache_data(self, node_id: str, node_url: str):
+        print("getting cache data from node", node_id)
+        try:
+            res = requests.get(f"{node_url}/internal/cache", timeout=1)
+            print("Successfully got cache data from node", node_id)
+            return res.json(), res.status_code
+
+        except Exception as e:
+            print("Failed to get node cache data", e.__class__)
+            return "", res.status_code
