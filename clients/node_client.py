@@ -58,13 +58,14 @@ class NodeClient:
             print("Other error:", e)
             self.cluster_service.update_missed_pings(node_id)
     
-    def get_cache_data(self, node_id: str, node_url: str):
-        print("getting cache data from node", node_id)
-        try:
-            res = requests.get(f"{node_url}/internal/cache", timeout=1)
-            print("Successfully got cache data from node", node_id)
-            return res.json(), res.status_code
-
-        except Exception as e:
-            print("Failed to get node cache data", e.__class__)
-            return "", res.status_code
+    def get_all_cache_data(self):
+        print("Getting cache data from all nodes")
+        active_nodes = self.cluster_service.get_active_nodes()
+        cache_data = {}
+        for node_id, node_url in active_nodes:
+            res = requests.get(f"{node_url}/internal/view/cache", timeout=1)
+            print("res", res)
+            cache_data[node_id] = res.json()
+        print("cache_data", cache_data)
+        print("Successfully got cache data from available nodes")
+        return cache_data, 200
