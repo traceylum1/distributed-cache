@@ -3,11 +3,12 @@ from typing import List
 import time
 
 class ClusterService:
-    def __init__(self, node_map: dict[str, NodeData], suspect_threshold: int, failure_threshold: int, recovery_threshold: int, max_backoff_interval: int):
+    def __init__(self, node_map: dict[str, NodeData], suspect_threshold: int, dead_threshold: int, suspect_recovery_threshold: int, dead_recovery_threshold: int, max_backoff_interval: int):
         self.node_map = node_map
         self.suspect_threshold = suspect_threshold
-        self.failure_threshold = failure_threshold
-        self.recovery_threshold = recovery_threshold
+        self.dead_threshold = dead_threshold
+        self.suspect_recovery_threshold = suspect_recovery_threshold
+        self.dead_recovery_threshold = dead_recovery_threshold
         self.max_backoff_interval = max_backoff_interval
 
 
@@ -29,35 +30,44 @@ class ClusterService:
 
     def update_missed_pings(self, node_id: str) -> None:
         state = self.node_map[node_id]
-        state.missed_pings = min(state.missed_pings+1, self.failure_threshold)
+
+        state.consecutive_successful_pings = 0
+        state.missed_pings = min(state.missed_pings+1, self.dead_threshold)
         print(f'missed pings - {state.missed_pings} (Node {node_id})' )
 
-        if state.missed_pings >= self.failure_threshold:
+        if state.missed_pings >= self.dead_threshold:
             state.status = "dead"
         elif state.missed_pings >= self.suspect_threshold:
             state.status = "suspect"
     
     def update_successful_pings(self, node_id: str) -> None:
         state = self.node_map[node_id]
-        
-        if state.status == "dead":
-            state.consecutive_successful_pings += 1
-            print(f'consecutive successful pings - {state.consecutive_successful_pings} (Node {node_id})' )
+        if state == "alive":
+            return
 
-            if state.consecutive_successful_pings >= self.recovery_threshold:
+        state.consecutive_successful_pings += 1
+        print(f'consecutive successful pings - {state.consecutive_successful_pings} (Node {node_id})' )
+
+        if state.status == "suspect":
+            if state.consecutive_successful_pings >= self.suspect_recovery_threshold:
                 self.mark_alive(node_id)
-                state.consecutive_successful_pings = 0
-                state.backoff_interval = 1
+            else:
+                state.backoff_interval /= 2
+        
+        elif state.status == "dead":
+            if state.consecutive_successful_pings >= self.dead_recovery_threshold:
+                self.mark_alive(node_id)
             else:
                 state.backoff_interval /= 2
 
+    # Should this function call node client for the temp primary node to send keys to rebalance?
+    # Issue would be duplicate requests from different nodes
     def mark_alive(self, node_id: str) -> None:
         state = self.node_map[node_id]
         state.status = "alive"
         state.missed_pings = 0
         state.consecutive_successful_pings = 0
         state.backoff_interval = 1
-
 
     def should_ping(self, node_id: str) -> bool:
         state = self.node_map[node_id]
