@@ -27,10 +27,10 @@ class NodeClient:
         else:
             return res.text, 200
     
-    async def send_put_async(self, session: aiohttp.ClientSession, node_url: str, key: str, value: str):
+    async def send_put_async(self, session: aiohttp.ClientSession, node_url: str, key: str, value: str, write_timestamp: float):
         print("calling node_client send_put_async", node_url)
         try:
-            async with session.put(url=f"{node_url}/internal/replica/{key}", json={"value": value}) as res:
+            async with session.put(url=f"{node_url}/internal/replica/{key}", json={"value": value, "write_timestamp": write_timestamp}) as res:
 
                 return "", res.status
         except Exception as e:

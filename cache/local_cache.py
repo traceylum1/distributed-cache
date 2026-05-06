@@ -8,8 +8,8 @@ class LocalCache:
         self.eviction = eviction
         self.expiration  = expiration
 
-    def put(self, key: str, val: str):
-        self.expiration.on_put(key)
+    def put(self, key: str, val: str, write_timestamp: float):
+        self.expiration.on_put(key, write_timestamp)
         evicted = self.eviction.on_put(key, len(self.cache) == self.capacity)
         if evicted:
             print("Evicted key --", evicted.key)

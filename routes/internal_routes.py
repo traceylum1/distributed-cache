@@ -26,9 +26,11 @@ def create_internal_bp(cache_service: CacheService) -> Blueprint:
     def put_key_replica(key: str):
         print("processing forwarded put request to replica")
         value = request.json["value"]
+        write_timestamp = request.json["write_timestamp"]
         print("value from request", value)
         print("key from request", key)
-        return cache_service.handle_replication(key, value)
+        print("write_timestamp from request", write_timestamp)
+        return cache_service.handle_replication(key, value, write_timestamp)
 
     
     return internal_bp

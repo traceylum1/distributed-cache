@@ -21,8 +21,13 @@ def create_app():
     node_map = build_nodes(config)
 
     eviction_policy = LRU()
-    expiration_policy = TTL(5)
-    local_cache = LocalCache(capacity=3, eviction=eviction_policy, expiration=expiration_policy)
+    expiration_policy = TTL()
+
+    local_cache = LocalCache(
+        capacity=3,
+        eviction=eviction_policy,
+        expiration=expiration_policy
+    )
 
     cluster_service = ClusterService(
         node_map=node_map, 
@@ -76,7 +81,6 @@ def create_app():
     app.register_blueprint(health_bp)
     app.register_blueprint(view_bp)
     
-
     return app, config
 
 app, config = create_app()

@@ -2,6 +2,7 @@ from services.routing_service import RoutingService
 from clients.node_client import NodeClient
 from cache.local_cache import LocalCache
 from services.replication_service import replicate_to
+import time
 
 class CacheService:
     def __init__(self, routing_service: RoutingService, node_client: NodeClient, local_cache: LocalCache):
@@ -16,10 +17,12 @@ class CacheService:
         replicas = nodes[1:]
         print(primary)
 
+        write_timestamp = time.time()
+
         if primary.is_local:
-            if self.local_cache.put(key, value) == False:
+            if self.local_cache.put(key, value, write_timestamp) == False:
                 return "", 500
-            await replicate_to(self.node_client, replicas, key, value)
+            await replicate_to(self.node_client, replicas, key, value, write_timestamp)
             return "", 200
 
         else:
@@ -38,8 +41,8 @@ class CacheService:
         else:
             return self.node_client.forward_get(primary.url, key)
         
-    def handle_replication(self, key: str, value: str):
-        if self.local_cache.put(key, value) == False:
+    def handle_replication(self, key: str, value: str, write_timestamp: float):
+        if self.local_cache.put(key, value, write_timestamp) == False:
             return "", 500
         return "", 201
     
