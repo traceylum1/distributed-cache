@@ -42,7 +42,7 @@ class ClusterService:
     
     def update_successful_pings(self, node_id: str) -> None:
         state = self.node_map[node_id]
-        if state == "alive":
+        if state.status == "alive":
             return
 
         state.consecutive_successful_pings += 1
