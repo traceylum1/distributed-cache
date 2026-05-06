@@ -35,9 +35,7 @@ class FailureDetection:
 
     def run(self):
         while not self._stop_event.is_set():
-            # Example: failure detection
             for node_id, node_data in self.node_map.items():
                 if not node_data.is_local and self.cluster_service.should_ping(node_id):
-                    self.cluster_service.update_last_ping(node_id)
                     self.node_client.send_ping(node_id, node_data.url)
             time.sleep(self.interval)

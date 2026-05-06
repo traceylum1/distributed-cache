@@ -26,3 +26,4 @@ class NodeData:
     missed_pings: int
     last_ping: float
     backoff_interval: int
+    consecutive_successful_pings: int

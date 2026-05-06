@@ -39,11 +39,12 @@ class NodeClient:
     
     def send_ping(self, node_id: str, node_url: str):
         print("calling node_client send_ping", node_url)
+        self.cluster_service.update_last_ping(node_id)
         try:
             res = requests.get(f"{node_url}/health/ping", timeout=1)
             # If we get here, the node responded
-            print("Alive:", res.status_code)
-            self.cluster_service.mark_alive(node_id)
+            print("Successful ping to node", node_id)
+            self.cluster_service.update_successful_pings(node_id)
 
         except requests.exceptions.Timeout:
             print("Timeout → node likely slow or dead")

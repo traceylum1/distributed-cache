@@ -3,10 +3,12 @@ from typing import List
 import time
 
 class ClusterService:
-    def __init__(self, node_map: dict[str, NodeData], suspect_threshold: int, failure_threshold: int):
+    def __init__(self, node_map: dict[str, NodeData], suspect_threshold: int, failure_threshold: int, recovery_threshold: int, max_backoff_interval: int):
         self.node_map = node_map
         self.suspect_threshold = suspect_threshold
         self.failure_threshold = failure_threshold
+        self.recovery_threshold = recovery_threshold
+        self.max_backoff_interval = max_backoff_interval
 
 
     def get_active_nodes(self) -> List[tuple[str, str]]:
@@ -34,12 +36,28 @@ class ClusterService:
             state.status = "dead"
         elif state.missed_pings >= self.suspect_threshold:
             state.status = "suspect"
+    
+    def update_successful_pings(self, node_id: str) -> None:
+        state = self.node_map[node_id]
+        
+        if state.status == "dead":
+            state.consecutive_successful_pings += 1
+            print(f'consecutive successful pings - {state.consecutive_successful_pings} (Node {node_id})' )
+
+            if state.consecutive_successful_pings >= self.recovery_threshold:
+                self.mark_alive(node_id)
+                state.consecutive_successful_pings = 0
+                state.backoff_interval = 1
+            else:
+                state.backoff_interval /= 2
 
     def mark_alive(self, node_id: str) -> None:
         state = self.node_map[node_id]
         state.status = "alive"
         state.missed_pings = 0
+        state.consecutive_successful_pings = 0
         state.backoff_interval = 1
+
 
     def should_ping(self, node_id: str) -> bool:
         state = self.node_map[node_id]
@@ -48,7 +66,7 @@ class ClusterService:
             if self.time_since_last_ping(node_id) < state.backoff_interval:
                 return False
             else:
-                state.backoff_interval *= 2
+                state.backoff_interval = min(state.backoff_interval * 2, self.max_backoff_interval)
 
         return True
 

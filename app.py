@@ -27,7 +27,9 @@ def create_app():
     cluster_service = ClusterService(
         node_map=node_map, 
         suspect_threshold=3, 
-        failure_threshold=6
+        failure_threshold=6,
+        recovery_threshold=5,
+        max_backoff_interval=60,
     )
 
     node_client = NodeClient(

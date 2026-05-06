@@ -16,6 +16,7 @@ def build_nodes(config: NodeConfig) -> List[NodeData]:
                                 missed_pings=0,
                                 last_ping=0,
                                 backoff_interval=1,
+                                consecutive_successful_pings=0,
                             )
     
     print("node_map", node_map)
