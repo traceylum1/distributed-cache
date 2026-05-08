@@ -28,16 +28,24 @@ class CacheService:
         else:
             return self.node_client.forward_put(primary.url, key, value)
 
+
+    """
+    handle_get:
+        - if local node has key, return value
+        - else, forward requests to primary, then replicas if necessary?
+            - would forward to replicas if primary node down
+            - loop until the first successful read request
+    """
     def handle_get(self, key: str):
-        nodes = self.routing_service.get_primary_and_replica_nodes(key)
+        nodes, local_has_key = self.routing_service.get_primary_and_replica_nodes(key)
 
         primary = nodes[0]
+        replicas = nodes[1:]
 
-        if primary.is_local:
+        if local_has_key:
             value = self.local_cache.get(key)
-            if value is None:
-                return "", 404
             return value, 200
+
         else:
             return self.node_client.forward_get(primary.url, key)
         

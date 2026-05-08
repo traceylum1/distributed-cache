@@ -25,21 +25,26 @@ class RoutingService:
         return int(hashlib.md5(key.encode()).hexdigest(), 16)
 
     """
-    get_nodes_for_key: 
+    get_primary_and_replica_nodes: 
         - gets primary and replica nodes
         - returns them in an ordered list [primary, replica1, replica2, ...]
     """
-    def get_primary_and_replica_nodes(self, key: str) -> List[NodeData]:
+    def get_primary_and_replica_nodes(self, key: str) -> tuple[List[NodeData], bool]:
         key_hash = self._hash(key)
 
         idx = bisect.bisect_left(self.ring, key_hash)
         if idx == len(self.ring):
             idx = 0  # wrap around ring
         
+        local_has_key = False
         nodes = []
 
         for i in range(self.replication_factor):
             curr_idx = (idx + i) % len(self.ring)
-            nodes.append(self.node_hash[self.ring[curr_idx]])
+            curr_node = self.node_hash[self.ring[curr_idx]]
+            if curr_node.is_local:
+                local_has_key = True
 
-        return nodes
+            nodes.append(curr_node)
+
+        return nodes, local_has_key
