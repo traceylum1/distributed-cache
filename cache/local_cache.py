@@ -23,7 +23,7 @@ class LocalCache:
             if self.expiration.is_expired(key):
                 self._delete(key)
                 print("Key is expired")
-                return None
+                return ""
             else:
                 self.eviction.on_get(key)
                 value = self.cache[key]
@@ -31,7 +31,7 @@ class LocalCache:
                 return value
         else:
             print("Cache miss")
-            return None
+            return ""
 
     def _delete(self, key: str):
         self.eviction.on_delete(key)

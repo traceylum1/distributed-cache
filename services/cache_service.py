@@ -11,7 +11,7 @@ class CacheService:
         self.local_cache = local_cache
 
     async def handle_put(self, key: str, value: str):
-        nodes = self.routing_service.get_primary_and_replica_nodes(key)
+        nodes, _ = self.routing_service.get_primary_and_replica_nodes(key)
 
         primary = nodes[0]
         replicas = nodes[1:]
@@ -32,22 +32,22 @@ class CacheService:
     """
     handle_get:
         - if local node has key, return value
-        - else, forward requests to primary, then replicas if necessary?
-            - would forward to replicas if primary node down
+        - else, forward requests to primary, then replicas if necessary
             - loop until the first successful read request
     """
     def handle_get(self, key: str):
         nodes, local_has_key = self.routing_service.get_primary_and_replica_nodes(key)
 
-        primary = nodes[0]
-        replicas = nodes[1:]
-
         if local_has_key:
             value = self.local_cache.get(key)
             return value, 200
 
-        else:
-            return self.node_client.forward_get(primary.url, key)
+        for node in nodes:
+            value, status_code = self.node_client.forward_get(node.url, key)
+            if status_code == 200:
+                return value, 200
+            
+        return "", 500
         
     def handle_replication(self, key: str, value: str, write_timestamp: float):
         if self.local_cache.put(key, value, write_timestamp) == False:
