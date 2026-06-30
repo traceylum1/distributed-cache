@@ -83,3 +83,9 @@ class ClusterService:
     def time_since_last_ping(self, node_id: str) -> float:
         state = self.node_map[node_id]
         return time.time() - state.last_ping
+    
+    def is_temp_node(self, curr_node_id: str, revived_node_id: str) -> bool:
+        return
+
+    def rebalance(self, node_id: str) -> None:
+        return
