@@ -12,11 +12,12 @@ def build_nodes(config: NodeConfig) -> List[NodeData]:
                                 id=node_id,
                                 url=f"http://127.0.0.1:{port}",
                                 is_local=is_local,
-                                status=("alive"),
+                                status="alive",
                                 missed_pings=0,
                                 last_ping=0,
                                 backoff_interval=1,
                                 consecutive_successful_pings=0,
+                                temp_node_ids=[]
                             )
     
     print("node_map", node_map)

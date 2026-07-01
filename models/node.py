@@ -27,3 +27,4 @@ class NodeData:
     last_ping: float
     backoff_interval: int
     consecutive_successful_pings: int
+    temp_node_ids: list[str]

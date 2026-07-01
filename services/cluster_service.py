@@ -84,6 +84,9 @@ class ClusterService:
         state = self.node_map[node_id]
         return time.time() - state.last_ping
     
+    # What if multiple consecutive nodes in the hash ring were down and the temp node
+    # took over the hash keys of more than just the immediate node before it?
+    # Add temp_node_ids array to NodeData when writing to temp so we don't have to check hash ring
     def is_temp_node(self, curr_node_id: str, revived_node_id: str) -> bool:
         return
 
