@@ -60,14 +60,20 @@ class ClusterService:
             else:
                 state.backoff_interval /= 2
 
+    def mark_dead(selfself, node_state: NodeData) -> None:
+        node_state.status = "dead"
+        node_state.missed_pings = 0
+        node_state.consecutive_successful_pings = 0
+        node_state.backoff_interval = 1
+    
+
     # Should this function call node client for the temp primary node to send keys to rebalance?
     # Issue would be duplicate requests from different nodes
-    def mark_alive(self, node_id: str) -> None:
-        state = self.node_map[node_id]
-        state.status = "alive"
-        state.missed_pings = 0
-        state.consecutive_successful_pings = 0
-        state.backoff_interval = 1
+    def mark_alive(self, node_state: NodeData) -> None:
+        node_state.status = "alive"
+        node_state.missed_pings = 0
+        node_state.consecutive_successful_pings = 0
+        node_state.backoff_interval = 1
 
     def should_ping(self, node_id: str) -> bool:
         state = self.node_map[node_id]

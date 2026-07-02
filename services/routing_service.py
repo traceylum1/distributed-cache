@@ -48,3 +48,8 @@ class RoutingService:
             nodes.append(curr_node)
 
         return nodes, local_has_key
+
+
+    # Function to check if dead node is immediately before curr node for rebalance tracking
+    def is_dead_node_prev(self, curr_node_id, dead_node_id):
+        return
