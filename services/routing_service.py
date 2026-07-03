@@ -51,5 +51,6 @@ class RoutingService:
 
 
     # Function to check if dead node is immediately before curr node for rebalance tracking
+    # How do we backtrack to get ring order without the hash key?
     def is_dead_node_prev(self, curr_node_id, dead_node_id):
         return
